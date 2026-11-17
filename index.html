@@ -1,156 +1,70 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Jogo de Organização de Livros</title>
-    <style>
-        :root {
-            --bg-color: #331405;
-            --card-bg: #472a05;
-            --primary-color: #f9fbfd;
-            --text-color: #ebe0e0;
-            --romance-color: #5f0b12;
-            --ciencias-color: #0d4112;
-            --fantasia-color: #4c0457;
-            --historia-color: #0d6d5d;
-        }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
 
-        h1 {
-            margin-bottom: 10px;
-        }
+    <h1>📚 Jogo de Organização de Livros</h1>
 
-        .score-board {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 20px;
-            background: #4b2105;
-            padding: 10px 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
+    <div class="score-board">
+        Pontuação: <span id="score">0</span>
+    </div>
 
-        /* Área dos livros para arrastar */
-        .books-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-            min-height: 80px;
-            width: 100%;
-            max-width: 900px;
-            padding: 15px;
-            background:#2e1908
-            border-radius: 10px;
-            margin-bottom: 30px;
-        }
+    <!-- Área dos livros -->
+    <div class="books-container" id="books-container">
+        <!-- Os livros serão adicionados pelo JavaScript -->
+    </div>
 
-        .book {
-            background-color: #582b07;
-            border: 2px solid #ccc;
-            border-radius: 8px;
-            padding: 10px 15px;
-            cursor: grab;
-            user-select: none;
-            font-weight: 600;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
+    <!-- Estantes -->
+    <div class="shelves-grid">
 
-        .book:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 10px rgba(0,0,0,0.15);
-        }
+        <div class="shelf" data-category="Romance">
+            <div class="shelf-icon">❤️</div>
+            <h2 class="shelf-title">Romance</h2>
+            <p class="shelf-desc">Livros de histórias românticas</p>
+            <div class="shelf-content"></div>
+        </div>
 
-        .book.selected {
-            border-color: var(--primary-color);
-            background-color: #3a1f07;
-        }
+        <div class="shelf" data-category="Ciências">
+            <div class="shelf-icon">🔬</div>
+            <h2 class="shelf-title">Ciências</h2>
+            <p class="shelf-desc">Livros científicos e descobertas</p>
+            <div class="shelf-content"></div>
+        </div>
 
-        /* Estantes */
-        .shelves-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            width: 100%;
-            max-width: 900px;
-        }
+        <div class="shelf" data-category="Fantasia">
+            <div class="shelf-icon">🧙</div>
+            <h2 class="shelf-title">Fantasia</h2>
+            <p class="shelf-desc">Livros de magia e aventuras</p>
+            <div class="shelf-content"></div>
+        </div>
 
-        .shelf {
-            background: var(--card-bg);
-            border-radius: 10px;
-            padding: 15px;
-            min-height: 180px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            border: 2px dashed #bbb;
-            transition: background-color 0.3s, border-color 0.3s;
-        }
+        <div class="shelf" data-category="História">
+            <div class="shelf-icon">🏛️</div>
+            <h2 class="shelf-title">História</h2>
+            <p class="shelf-desc">Livros sobre acontecimentos históricos</p>
+            <div class="shelf-content"></div>
+        </div>
 
-        .shelf.drag-over {
-            border-color: var(--primary-color);
-            background-color: #3f2106;
-        }
+    </div>
 
-        .shelf-icon {
-            font-size: 2.5rem;
-            margin-bottom: 5px;
-        }
+    <!-- Modal de fim de jogo -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h2>🎉 Parabéns!</h2>
+            <p>Você organizou todos os livros!</p>
+            <button id="restart-button">Jogar novamente</button>
+        </div>
+    </div>
 
-        .shelf-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin: 0;
-        }
+</body>
+</html>
 
-        .shelf-desc {
-            font-size: 0.85rem;
-            color: #e0d2d2;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .shelf-content {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            flex-grow: 1;
-        }
-
-        .shelf[data-category="Romance"] { background-color: var(--romance-color); }
-        .shelf[data-category="Ciências"] { background-color: var(--ciencias-color); }
-        .shelf[data-category="Fantasia"] { background-color: var(--fantasia-color); }
-        .shelf[data-category="História"] { background-color: var(--historia-color); }
-
-        /* Modal de Fim de Jogo */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgb(54, 30, 6);
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            text-align: center;
-            max-width: 400px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
-        }
